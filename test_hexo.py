@@ -1,10 +1,8 @@
 #!/usr/bin/python
 import datetime
 import os
-import sys
 import time
 import csv
-
 import urllib3
 
 urllib3.disable_warnings()
@@ -13,8 +11,7 @@ import hexoskin.client
 import hexoskin.errors
 
 class DataPoller(object):
-    """An example of an approach for polling for realtime data in a cache-
-    friendly fashon."""
+    """An example of an approach for polling for realtime data in a cache-friendly fashion."""
 
     def __init__(self, api, datatypes, **kwargs):
         self.since = 0
@@ -31,18 +28,18 @@ class DataPoller(object):
         result = self.api.data.list(datatype__in=self.datatypes, **self.filter_args)
         if result:
             self.since = max([max(v)[0] for d, v in result[0].data.items()])
-            if len(result[0].data.itervalues().next()) > 1:
+            if len(result[0].data) > 1:
                 return result[0].data
         return []
 
 def basic_login():
-    """basic example to perform login"""
+    """Basic example to perform login."""
     if not os.path.exists('.hxauth'):
         with open('.hxauth', 'w') as f:
-            str1 = 'api_key = your_key\n' \
-                   'api_secret = your_secret\n' \
+            str1 = 'api_key = tPTaDpiwO36pyIKrltUxuxBOfk6XRfC2TSZP5yBl\n' \
+                   'api_secret = PSTWsRi3o7zCgZcNne0DZv1M3jmY6LVi2GvFydyYOrXRQrkGREOWyEbXVv7UgEbyCpXdWBVr4HvyB0gMUhcanSNLPLJgT5Bx2Y38gKnqt7X8pMu4Qde4ZlKPTfhKwXjG\n' \
                    'auth = yuanq4@mcmaster.ca:12yy90Qaz&\n' \
-                   'base_url = https://api.hexoskin.com\n'
+                   'base_url = https://api.hexoskin.com/api/\n'
             f.write(str1)
 
     try:
@@ -55,7 +52,7 @@ def basic_login():
         raise ValueError('Please fill the file: ".hxauth" with credentials')
 
     try:
-        # try an oauth2 login
+        # Try an oauth2 login
         auth = conf.pop('auth')
         username, password = auth.split(':')
         api = hexoskin.client.HexoApi(**conf)
@@ -65,24 +62,28 @@ def basic_login():
         api = hexoskin.client.HexoApi(auth=auth, **conf)
     return api
 
-
-
-
 api = basic_login()
-
 
 def stream_and_store_data():
     """Stream all data and store it locally."""
     user = api.account.list()[0]
     datatypes = api.datatype.list()
-    datatype_ids = [datatype.id for datatype in datatypes]
     
-    poller = DataPoller(api, datatype_ids, user=user.resource_uri)
+    # # Print datatypes for debugging
+    # print("Available datatypes:")
+    # for datatype in datatypes:
+    #     print(f"ID: {datatype.id}, Name: {datatype.name}")
+
+    # Filter out incompatible datatype 54
+    compatible_datatypes = [datatype for datatype in datatypes if datatype.id != 54]
+    compatible_datatype_ids = [datatype.id for datatype in compatible_datatypes]
+    
+    poller = DataPoller(api, compatible_datatype_ids, user=user.resource_uri)
 
     filename = f"hexoskin_data_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
     with open(filename, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['timestamp'] + [f'datatype_{datatype.id}' for datatype in datatypes])
+        writer.writerow(['timestamp'] + [f'datatype_{datatype.id}' for datatype in compatible_datatypes])
 
         try:
             while True:
@@ -97,7 +98,6 @@ def stream_and_store_data():
             print("Stopping data streaming...")
         except Exception as e:
             print(f"Error while streaming data: {e}")
-
 
 if __name__ == '__main__':
     stream_and_store_data()

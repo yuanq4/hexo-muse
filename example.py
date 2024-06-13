@@ -18,9 +18,9 @@ def basic_login():
     # will populate the auth config.
     if not os.path.exists('.hxauth'):
         with open('.hxauth', 'w') as f:
-            str1 = 'api_key = your_key\n' \
-                   'api_secret = your_secret\n' \
-                   'auth = user@example.com:passwd\n' \
+            str1 = 'api_key = tPTaDpiwO36pyIKrltUxuxBOfk6XRfC2TSZP5yBl\n' \
+                   'api_secret = PSTWsRi3o7zCgZcNne0DZv1M3jmY6LVi2GvFydyYOrXRQrkGREOWyEbXVv7UgEbyCpXdWBVr4HvyB0gMUhcanSNLPLJgT5Bx2Y38gKnqt7X8pMu4Qde4ZlKPTfhKwXjG\n' \
+                   'auth = yuanq4@mcmaster.ca:12yy90Qaz&\n' \
                    'base_url = https://api.hexoskin.com\n'
             f.write(str1)
 

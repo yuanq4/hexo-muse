@@ -442,7 +442,7 @@ class ApiHelper(object):
                 self.resource_conf[n] = self.get(r['schema']).result
                 self.resource_conf[n]['list_endpoint'] = r['list_endpoint']
                 self.resource_conf[n]['name'] = n
-            except HttpNotFound as e:
+            except (HttpNotFound, HttpForbidden) as e:
                 # Continue if a resource listed in /api/ is unavailable.
                 pass
             time.sleep(.3)
