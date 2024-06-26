@@ -8,8 +8,8 @@ from sys import platform
 class Muse():
     """Muse 2016 headband"""
 
-    def __init__(self, address=None, callback=None, eeg=True, accelero=True,
-                 giro=True, backend='auto', interface=None, time_func=time,
+    def __init__(self, address=None, callback=None, eeg=True, accelero=False,
+                 giro=False, backend='auto', interface=None, time_func=time,
                  name=None):
         """Initialize"""
         self.address = address
